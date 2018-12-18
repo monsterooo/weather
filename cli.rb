@@ -1,35 +1,24 @@
 require 'inifile'
 require "thor"
+require "http"
+require "nokogiri"
 
 HOME = ENV['HOME']
 CONFIG = "#{HOME}/.weather"
+TESTAPI = 'http://flash.weather.com.cn/wmaps/xml/china.xml';
 
-# class MyCLI < Thor
-#   desc "hello NAME", "say hello to NAME"
-#   def hello(name)
-#     puts "Hello #{name}"
-#   end
-# end
-
-class MyCLI < Thor
-  desc "hello NAME", "say hello to NAME"
-  long_desc <<-LONGDESC
-    `cli hello` will print out a message to a person of your
-    choosing.
-
-    You can optionally specify a second parameter, which will print
-    out a from message as well.
-
-    > $ cli hello "Yehuda katz" "Carl Lerche"
-
-    > from: Carlerche
-  LONGDESC
-  def hello(name)
-    puts "Hello #{name}"
+class Weather < Thor
+  desc "search NAME", "搜索您所在城市的编码"
+  def search(name)
+    puts "正在搜索城市数据..."
+    search = HTTP.get(TESTAPI).to_s
+    xml_doc  = Nokogiri::XML(search)
+    city = xml_doc.xpath("//city")
+    puts city
   end
 end
 
-MyCLI.start(ARGV);
+Weather.start(ARGV);
 
 # if !File.exists? CONFIG
 #   sudo 'touch', CONFIG
